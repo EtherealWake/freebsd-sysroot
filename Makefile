@@ -17,7 +17,7 @@
 DIRS = lib libexec usr/include usr/lib
 URLBASE = http://ftp.freebsd.org/pub/FreeBSD/releases/
 
-VERSION = 11.2
+VERSION = 12.0
 RELEASE = ${VERSION}-RELEASE
 
 TAR_FLAGS = --uid 0 --gid 0 --exclude usr/lib/debug
@@ -31,7 +31,7 @@ WRK_ARM64 = FreeBSD-${RELEASE}-arm64-aarch64
 URL_ARM64 = ${URLBASE}arm64/aarch64/${RELEASE}/base.txz
 SRC_ARM64 = ${WRK_ARM64}/base.txz
 DIR_ARM64 = ${WRK_ARM64}/root
-SHA_ARM64 = 265c0a25fa162489c95a325d79e99063fb83035706a2db9c0695d23ca38e171f
+SHA_ARM64 = b212d0ff7a349069706ae46e4312c5bdecd173c034c7b0cf2b68094a22a24261
 
 ${SRC_ARM64}:
 	mkdir -p ${WRK_ARM64}
@@ -56,11 +56,11 @@ arm64 aarch64: ${PKG_ARM64}
 
 PKG_ARMV6 = FreeBSD-${RELEASE}-arm-armv6-sysroot.tar.xz
 WRK_ARMV6 = FreeBSD-${RELEASE}-arm-armv6
-URL_ARMV6 = ${URLBASE}arm/armv6/ISO-IMAGES/${VERSION}/FreeBSD-${RELEASE}-arm-armv6-BEAGLEBONE.img.xz
-SRC_ARMV6 = ${WRK_ARMV6}/FreeBSD-${RELEASE}-arm-armv6-BEAGLEBONE.img.xz
-IMG_ARMV6 = ${WRK_ARMV6}/FreeBSD-${RELEASE}-arm-armv6-BEAGLEBONE.img
+URL_ARMV6 = ${URLBASE}arm/armv6/ISO-IMAGES/${VERSION}/FreeBSD-${RELEASE}-arm-armv6-RPI-B.img.xz
+SRC_ARMV6 = ${WRK_ARMV6}/FreeBSD-${RELEASE}-arm-armv6-RPI-B.img.xz
+IMG_ARMV6 = ${WRK_ARMV6}/FreeBSD-${RELEASE}-arm-armv6-RPI-B.img
 DIR_ARMV6 = ${WRK_ARMV6}/root
-SHA_ARMV6 = e1d7c94ed8d442b0986d261f10b93a4bd14757562e339ba0d1c3737d390963dd
+SHA_ARMV6 = 62015e596148afbf41c79e26ccf0aa03fced739f52f29da2e0daa53dd9b1e06f
 
 ${SRC_ARMV6}:
 	mkdir -p ${WRK_ARMV6}
@@ -83,6 +83,38 @@ arm armv6: ${PKG_ARMV6}
 .PHONY: arm armv6
 
 #
+# ARMv7-A
+#
+
+PKG_ARMV7 = FreeBSD-${RELEASE}-arm-armv7-sysroot.tar.xz
+WRK_ARMV7 = FreeBSD-${RELEASE}-arm-armv7
+URL_ARMV7 = ${URLBASE}arm/armv7/ISO-IMAGES/${VERSION}/FreeBSD-${RELEASE}-arm-armv7-GENERICSD.img.xz
+SRC_ARMV7 = ${WRK_ARMV7}/FreeBSD-${RELEASE}-arm-armv7-GENERICSD.img.xz
+IMG_ARMV7 = ${WRK_ARMV7}/FreeBSD-${RELEASE}-arm-armv7-GENERICSD.img
+DIR_ARMV7 = ${WRK_ARMV7}/root
+SHA_ARMV7 = 032265f4168fe086b62757493f0f7ce1fb0a638743cca52602e2a5f202ca15d0
+
+${SRC_ARMV7}:
+	mkdir -p ${WRK_ARMV7}
+	fetch -o ${.TARGET} ${URL_ARMV7}
+
+${IMG_ARMV7}: ${SRC_ARMV7}
+	test `sha256 -q ${SRC_ARMV7}` == ${SHA_ARMV7}
+	unxz -k ${SRC_ARMV7}
+
+${PKG_ARMV7}: ${IMG_ARMV7}
+	mkdir -p ${DIR_ARMV7}
+	sudo mdconfig -a -t vnode -f ${IMG_ARMV7} -o readonly -u md7
+	sudo mount -o ro,noexec,nosuid /dev/md7s2a ${DIR_ARMV7}
+	tar cJf ${.TARGET} -C ${DIR_ARMV7} ${TAR_FLAGS} ${DIRS}
+	sudo umount ${DIR_ARMV7}
+	sudo mdconfig -d -u md7
+
+arm armv7: ${PKG_ARMV7}
+
+.PHONY: arm armv7
+
+#
 # AMD64 (x86-64)
 #
 
@@ -91,7 +123,7 @@ WRK_AMD64 = FreeBSD-${RELEASE}-amd64
 URL_AMD64 = ${URLBASE}amd64/amd64/${RELEASE}/base.txz
 SRC_AMD64 = ${WRK_AMD64}/base.txz
 DIR_AMD64 = ${WRK_AMD64}/root
-SHA_AMD64 = a002be690462ad4f5f2ada6d01784836946894ed9449de6289b3e67d8496fd19
+SHA_AMD64 = 360df303fac75225416ccc0c32358333b90ebcd58e54d8a935a4e13f158d3465
 
 ${SRC_AMD64}:
 	mkdir -p ${WRK_AMD64}
@@ -119,7 +151,7 @@ WRK_I386  = FreeBSD-${RELEASE}-i386
 URL_I386  = ${URLBASE}i386/i386/${RELEASE}/base.txz
 SRC_I386  = ${WRK_I386}/base.txz
 DIR_I386  = ${WRK_I386}/root
-SHA_I386  = 9c8be09d549f6365a43f8a86529110c1ebac4263ac357c8aa25b753d65b1460c
+SHA_I386  = 933df25a1b5093f056f000a305144d007785175aa7b9cc197cfaf3096142840d
 
 ${SRC_I386}:
 	mkdir -p ${WRK_I386}
@@ -142,8 +174,8 @@ i386: ${PKG_I386}
 # Common
 #
 
-PKGS = ${PKG_ARM64} ${PKG_ARMV6} ${PKG_AMD64} ${PKG_I386}
-WORK = ${WRK_ARM64} ${WRK_ARMV6} ${WRK_AMD64} ${WRK_I386}
+PKGS = ${PKG_ARM64} ${PKG_ARMV6} ${PKG_ARMV7} ${PKG_AMD64} ${PKG_I386}
+WORK = ${WRK_ARM64} ${WRK_ARMV6} ${WRK_ARMV7} ${WRK_AMD64} ${WRK_I386}
 
 all: ${PKGS}
 	@sha256 ${.ALLSRC}
