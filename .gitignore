@@ -1,0 +1,10 @@
+# Build Artifacts
+FreeBSD-*
+
+# Editor Debris
+*.bak
+*.swp
+*.tmp
+
+# Visual Studio Code
+/.vscode
