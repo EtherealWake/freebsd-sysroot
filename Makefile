@@ -175,6 +175,7 @@ i386: ${PKG_I386}
 #
 
 PKGS = ${PKG_ARM64} ${PKG_ARMV6} ${PKG_ARMV7} ${PKG_AMD64} ${PKG_I386}
+SRCS = ${SRC_ARM64} ${SRC_ARMV6} ${SRC_ARMV7} ${SRC_AMD64} ${SRC_I386}
 WORK = ${WRK_ARM64} ${WRK_ARMV6} ${WRK_ARMV7} ${WRK_AMD64} ${WRK_I386}
 
 all: ${PKGS}
@@ -186,7 +187,7 @@ clean:
 distclean:
 	rm -rf ${PKGS} ${WORK}
 
-fetch:
+fetch: ${SRCS}
 
 .MAIN: all
 .PHONY: all clean distclean fetch
