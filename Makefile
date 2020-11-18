@@ -17,7 +17,7 @@
 DIRS = lib libexec usr/include usr/lib
 URLBASE = http://ftp.freebsd.org/pub/FreeBSD/releases/
 
-VERSION = 12.1
+VERSION = 12.2
 RELEASE = ${VERSION}-RELEASE
 
 TAR_FLAGS = --uid 0 --gid 0 --exclude usr/lib/debug
@@ -31,7 +31,7 @@ WRK_ARM64 = FreeBSD-${RELEASE}-arm64-aarch64
 URL_ARM64 = ${URLBASE}arm64/aarch64/${RELEASE}/base.txz
 SRC_ARM64 = ${WRK_ARM64}/base.txz
 DIR_ARM64 = ${WRK_ARM64}/root
-SHA_ARM64 = daffac169a2ab46adb4c4df69d20ff2e479e8054d9fcb2697385e81a359e0965
+SHA_ARM64 = 3f82224fbcc6b2a2e1a1358cec5f32c0a08b5c5e6796e1a998369eb624a11cf3
 
 ${SRC_ARM64}:
 	mkdir -p ${WRK_ARM64}
@@ -60,7 +60,7 @@ URL_ARMV6 = ${URLBASE}arm/armv6/ISO-IMAGES/${VERSION}/FreeBSD-${RELEASE}-arm-arm
 SRC_ARMV6 = ${WRK_ARMV6}/FreeBSD-${RELEASE}-arm-armv6-RPI-B.img.xz
 IMG_ARMV6 = ${WRK_ARMV6}/FreeBSD-${RELEASE}-arm-armv6-RPI-B.img
 DIR_ARMV6 = ${WRK_ARMV6}/root
-SHA_ARMV6 = 34df65dcd50713736379a936e45aea82a7c20d638ef0cef2cff853db1e6f8524
+SHA_ARMV6 = 207097afd24c41103caa2f0cc5992afe4d968abaad5f6828d7e6b6a065ca024e
 
 ${SRC_ARMV6}:
 	mkdir -p ${WRK_ARMV6}
@@ -72,11 +72,11 @@ ${IMG_ARMV6}: ${SRC_ARMV6}
 
 ${PKG_ARMV6}: ${IMG_ARMV6}
 	mkdir -p ${DIR_ARMV6}
-	sudo mdconfig -a -t vnode -f ${IMG_ARMV6} -o readonly -u md7
-	sudo mount -o ro,noexec,nosuid /dev/md7s2a ${DIR_ARMV6}
+	sudo mdconfig -a -t vnode -f ${IMG_ARMV6} -o readonly -u md6
+	sudo mount -o ro,noexec,nosuid /dev/md6s2a ${DIR_ARMV6}
 	tar cJf ${.TARGET} -C ${DIR_ARMV6} ${TAR_FLAGS} ${DIRS}
 	sudo umount ${DIR_ARMV6}
-	sudo mdconfig -d -u md7
+	sudo mdconfig -d -u md6
 
 arm armv6: ${PKG_ARMV6}
 
@@ -92,7 +92,7 @@ URL_ARMV7 = ${URLBASE}arm/armv7/ISO-IMAGES/${VERSION}/FreeBSD-${RELEASE}-arm-arm
 SRC_ARMV7 = ${WRK_ARMV7}/FreeBSD-${RELEASE}-arm-armv7-GENERICSD.img.xz
 IMG_ARMV7 = ${WRK_ARMV7}/FreeBSD-${RELEASE}-arm-armv7-GENERICSD.img
 DIR_ARMV7 = ${WRK_ARMV7}/root
-SHA_ARMV7 = d5bd4ead96f64a1f62ab097df8bdbfd0de99aace76799b7aa66a0695e2fd9900
+SHA_ARMV7 = 79b57227797d98d7d0d7b40144aec80fb85270b53ac047a4f066620844c1a119
 
 ${SRC_ARMV7}:
 	mkdir -p ${WRK_ARMV7}
@@ -123,7 +123,7 @@ WRK_AMD64 = FreeBSD-${RELEASE}-amd64
 URL_AMD64 = ${URLBASE}amd64/amd64/${RELEASE}/base.txz
 SRC_AMD64 = ${WRK_AMD64}/base.txz
 DIR_AMD64 = ${WRK_AMD64}/root
-SHA_AMD64 = 7a0de3237547315fe6404c651c44b356ee7b9a4bfa6ab022c2734237c3d66ded
+SHA_AMD64 = 8bd49ce35c340a04029266fbbe82b1fdfeb914263e39579eecafb2e67d00693a
 
 ${SRC_AMD64}:
 	mkdir -p ${WRK_AMD64}
@@ -151,7 +151,7 @@ WRK_I386  = FreeBSD-${RELEASE}-i386
 URL_I386  = ${URLBASE}i386/i386/${RELEASE}/base.txz
 SRC_I386  = ${WRK_I386}/base.txz
 DIR_I386  = ${WRK_I386}/root
-SHA_I386  = 4c978fb0d9c4f65e0089718f0e905fd5a8c2651582de050df6b7f49a8481a169
+SHA_I386  = bc333a1f05c13dd00d65025ae4cd8b88daa9c3c4839c331bfae2acafa1e069f5
 
 ${SRC_I386}:
 	mkdir -p ${WRK_I386}
